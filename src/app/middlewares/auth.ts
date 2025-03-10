@@ -6,6 +6,9 @@ import AppError from '../errors/AppError';
 
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { StatusCodes } from 'http-status-codes';
+import { TUserRole } from '../modules/auth/auth.interface';
+import catchAsync from '../utils/catchAsync';
+import { UserRegister } from '../modules/auth/auth.model';
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -36,13 +39,8 @@ const auth = (...requiredRoles: TUserRole[]) => {
 
     // checking if the user is blocked
     if (user?.isDeactivate) {
-      throw new AppError(StatusCodes.FORBIDDEN, 'This user is dectivated !');
+      throw new AppError(StatusCodes.FORBIDDEN, 'This user is deactivated !');
     }
-
-    // checking roles
-    // if (requiredRoles.length && !requiredRoles.includes(role)) {
-    //   throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized!');
-    // }
 
     req.user = decoded as JwtPayload;
     next();
